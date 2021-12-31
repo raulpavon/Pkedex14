@@ -12,12 +12,16 @@ class PokedexDetailViewController: UIViewController {
     weak var pokedexCoordinator: PokedexCoordinator?
     private let factory: PokedexFactory
     private var pokemon: Pokemon?
-    private var pokedexViewModel = PokedexViewModel()
     
     lazy var pokedexDetailUIView: PokedexDetailUIView = {
         let view = PokedexDetailUIView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    
+    lazy var viewModel: PokedexViewModel = {
+        let viewModel = factory.makePokedexViewModel(view: self, pokedexRepository: PokedexRepository())
+        return viewModel
     }()
     
     required init(factory: PokedexFactory, pokedexCoordinator: PokedexCoordinator, pokemon: Pokemon) {
@@ -38,6 +42,13 @@ class PokedexDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .red
+        self.title = "Pokedex"
+        self.navigationItem.hidesBackButton = true
+        let backButton =  UIBarButtonItem(title: "", style: .plain, target: self, action: #selector(backPressed(sender:)))
+        backButton.tintColor = .white
+        backButton.image = UIImage()
+        self.navigationItem.leftBarButtonItem = backButton
     }
     
     func initComponents() {
@@ -65,6 +76,28 @@ class PokedexDetailViewController: UIViewController {
     }
     
     @objc func getType(_ sender: UIButton) {
-        pokedexViewModel.getpokemonType(type: sender.titleLabel?.text ?? "")
+        viewModel.getpokemonType(type: sender.titleLabel?.text ?? "")
+    }
+    
+    @objc func backPressed(sender: UIBarButtonItem) {
+        pokedexCoordinator?.start()
+    }
+}
+
+extension PokedexDetailViewController: PokedexView {
+    func setPokemonListType(pokemonType: PokemonType) {
+        
+    }
+    
+    func goToPokemonDetail(pokemon: Pokemon) {
+        
+    }
+    
+    func setPokemon(pokemon: Pokemon) {
+        
+    }
+    
+    func setPokemonList(pokemonList: [Results]) {
+        
     }
 }

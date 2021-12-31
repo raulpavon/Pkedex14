@@ -17,11 +17,11 @@ class PokemonTableViewCell: UITableViewCell {
             static let bottomMaincontainer: CGFloat = -10
         }
         enum LbPokemonName {
-            static let topLbPokemonName: CGFloat = 20
+            static let topLbPokemonName: CGFloat = 5
             static let leadingLbPokemonName: CGFloat = 20
         }
         enum ImgPokemon {
-            static let topImgPokemon: CGFloat = 20
+            static let topImgPokemon: CGFloat = 5
             static let heightImgPokemon: CGFloat = 20
             static let trailingImgPokemon: CGFloat = -20
         }
@@ -80,17 +80,18 @@ class PokemonTableViewCell: UITableViewCell {
     
     private func setAutolayout() {
         NSLayoutConstraint.activate([
-            mainContainer.topAnchor.constraint(equalTo: topAnchor, constant: PokemonTableViewCellConstraints.MainContainer.topMainContainer),
-            mainContainer.trailingAnchor.constraint(equalTo: trailingAnchor, constant: PokemonTableViewCellConstraints.MainContainer.trailingMainContainer),
-            mainContainer.leadingAnchor.constraint(equalTo: leadingAnchor, constant: PokemonTableViewCellConstraints.MainContainer.leadingMainContainer),
-            mainContainer.bottomAnchor.constraint(equalTo: bottomAnchor, constant: PokemonTableViewCellConstraints.MainContainer.bottomMaincontainer),
+            mainContainer.topAnchor.constraint(equalTo: topAnchor),
+            mainContainer.trailingAnchor.constraint(equalTo: trailingAnchor),
+            mainContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+            mainContainer.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            lbPokemonName.topAnchor.constraint(equalTo: mainContainer.topAnchor, constant: PokemonTableViewCellConstraints.LbPokemonName.topLbPokemonName),
-            lbPokemonName.leadingAnchor.constraint(equalTo: mainContainer.leadingAnchor, constant: PokemonTableViewCellConstraints.LbPokemonName.leadingLbPokemonName),
+            lbPokemonName.topAnchor.constraint(equalTo: mainContainer.safeAreaLayoutGuide.topAnchor, constant: PokemonTableViewCellConstraints.LbPokemonName.topLbPokemonName),
+            lbPokemonName.leadingAnchor.constraint(equalTo: mainContainer.safeAreaLayoutGuide.leadingAnchor, constant: PokemonTableViewCellConstraints.LbPokemonName.leadingLbPokemonName),
+            lbPokemonName.bottomAnchor.constraint(equalTo: mainContainer.safeAreaLayoutGuide.bottomAnchor, constant: -5),
             
-            imgPokemon.topAnchor.constraint(equalTo: mainContainer.topAnchor, constant: PokemonTableViewCellConstraints.ImgPokemon.topImgPokemon),
-            imgPokemon.heightAnchor.constraint(equalToConstant: PokemonTableViewCellConstraints.ImgPokemon.heightImgPokemon),
-            imgPokemon.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor, constant: PokemonTableViewCellConstraints.ImgPokemon.trailingImgPokemon),
+            imgPokemon.topAnchor.constraint(equalTo: mainContainer.safeAreaLayoutGuide.topAnchor, constant: PokemonTableViewCellConstraints.ImgPokemon.topImgPokemon),
+            imgPokemon.trailingAnchor.constraint(equalTo: mainContainer.safeAreaLayoutGuide.trailingAnchor, constant: PokemonTableViewCellConstraints.ImgPokemon.trailingImgPokemon),
+            imgPokemon.bottomAnchor.constraint(equalTo: mainContainer.safeAreaLayoutGuide.bottomAnchor, constant: -5)
         ])
     }
     
@@ -100,7 +101,7 @@ class PokemonTableViewCell: UITableViewCell {
     }
     
     func fillDetailPokemon(pokemon: Pokemon) {
-        imgPokemon.image = UIImage.getImageFromURL(imageString: pokemon.sprites.front_default)
+        imgPokemon.image = UIImage.getImageFromURL(imageString: pokemon.sprites.frontDefault)
         imgPokemon.isHidden = false
         lbPokemonName.text = pokemon.name
     }

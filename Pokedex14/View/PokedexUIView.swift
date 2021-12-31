@@ -9,8 +9,8 @@ import UIKit
 
 protocol PokedexUIViewDelegate: AnyObject {
     func getPokemon(text: String)
-    func getpokemonDetail(pokemon: Pokemon)
     func getPokemonType(text: String)
+    func goToPokemonDetail(pokemon: Pokemon)
 }
 
 class PokedexUIView: UIView {
@@ -21,18 +21,13 @@ class PokedexUIView: UIView {
             static let trailingSearchBar: CGFloat = -20
             static let heightSearchBar: CGFloat = 60
         }
-        enum TableView {
-            static let leadingTableView: CGFloat = 20
-            static let trailingTableView: CGFloat = -20
-            static let bottomTableView: CGFloat = -16
-        }
     }
     
     weak var delegate: PokedexUIViewDelegate?
-    var pokemonList: PokemonList?
+    var pokemonList = [Results]()
     var pokemon: Pokemon?
     var pokemonType: PokemonType?
-    
+    var searchMode: Bool = false
     
     private lazy var mainContainer: UIView = {
         let view = UIView(frame: .zero)
@@ -57,12 +52,9 @@ class PokedexUIView: UIView {
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(PokemonTableViewCell.self, forCellReuseIdentifier: PokemonTableViewCell.identifier)
-        tableView.separatorInset = .zero
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.tableFooterView = UIView(frame: .zero)
-        tableView.separatorStyle = .singleLine
         tableView.estimatedRowHeight = 100
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.register(PokemonTableViewCell.self, forCellReuseIdentifier: PokemonTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -101,9 +93,9 @@ class PokedexUIView: UIView {
             searchBar.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor, constant: PokedexUIViewConstraints.SearchBar.trailingSearchBar),
             
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: mainContainer.leadingAnchor, constant: PokedexUIViewConstraints.TableView.leadingTableView),
-            tableView.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor,constant: PokedexUIViewConstraints.TableView.trailingTableView),
-            tableView.bottomAnchor.constraint(equalTo: mainContainer.bottomAnchor, constant: PokedexUIViewConstraints.TableView.bottomTableView)
+            tableView.leadingAnchor.constraint(equalTo: mainContainer.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: mainContainer.bottomAnchor)
         ])
     }
 }
@@ -111,23 +103,30 @@ class PokedexUIView: UIView {
 extension PokedexUIView: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         delegate?.getPokemon(text: searchBar.text?.lowercased() ?? "")
+        searchMode = !searchMode
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchMode = !searchMode
+        tableView.reloadData()
     }
 }
 
 extension PokedexUIView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        !(searchBar.text?.isEmpty ?? false) ? 1 : pokemonList?.results.count ?? 0
+        searchMode ? 1 : pokemonList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PokemonTableViewCell.identifier, for: indexPath) as? PokemonTableViewCell else {
             return UITableViewCell()
         }
-        !(searchBar.text?.isEmpty ?? false) ? cell.fillDetailPokemon(pokemon: pokemon ?? Pokemon()) : cell.fillPokemonList(pokemon: pokemonList?.results[indexPath.row].name ?? "")
+        searchMode ? cell.fillDetailPokemon(pokemon: pokemon ?? Pokemon()) : cell.fillPokemonList(pokemon: pokemonList[indexPath.row].name)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.getpokemonDetail(pokemon: pokemon ?? Pokemon())
+        pokemon != nil ? delegate?.goToPokemonDetail(pokemon: pokemon ?? Pokemon()) : delegate?.getPokemon(text: pokemonList[indexPath.row].name)
     }
 }

@@ -107,6 +107,8 @@ class PokedexDetailUIView: UIView {
         return label
     }()
     
+    var pokemonList = [PokemonList().results]
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initComponents()
@@ -167,8 +169,8 @@ class PokedexDetailUIView: UIView {
     func fillPokemonDetail(pokemon: Pokemon) {
         lbPokemonName.text = "Name: \(pokemon.name)"
         lbPokemonNumber.text = "Number: \(pokemon.id)"
-        imgPokemon.image =  UIImage.getImageFromURL(imageString: pokemon.sprites.front_default)
-        imgPokemonShiny.image = UIImage.getImageFromURL(imageString: pokemon.sprites.front_shiny)
+        imgPokemon.image =  UIImage.getImageFromURL(imageString: pokemon.sprites.frontDefault)
+        imgPokemonShiny.image = UIImage.getImageFromURL(imageString: pokemon.sprites.frontShiny)
         
         setPokemonType(types: pokemon.types)
         
@@ -190,7 +192,7 @@ class PokedexDetailUIView: UIView {
     func setPokemonStats(stats: [Stats]) -> String {
         var stringStat = ""
         for i in 0...stats.count - 1 {
-            stringStat += "\(stats[i].stat.name): \(stats[i].base_stat)\n"
+            stringStat += "\(stats[i].stat.name): \(stats[i].baseStat)\n"
         }
         return stringStat
     }

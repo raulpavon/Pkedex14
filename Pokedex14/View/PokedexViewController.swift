@@ -11,12 +11,17 @@ class PokedexViewController: UIViewController {
     
     weak var pokedexCoordinator: PokedexCoordinator?
     private let factory: PokedexFactory
-    private var pokedexViewModel = PokedexViewModel()
     
     lazy var pokedexUIView: PokedexUIView = {
         let view = PokedexUIView(frame: .zero)
+        view.delegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    
+    lazy var viewModel: PokedexViewModel = {
+        let viewModel = factory.makePokedexViewModel(view: self, pokedexRepository: PokedexRepository())
+        return viewModel
     }()
     
     required init(factory: PokedexFactory, pokedexCoordinator: PokedexCoordinator) {
@@ -36,15 +41,17 @@ class PokedexViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        pokedexViewModel.getPokemonList()
-        self.navigationController?.navigationBar.barStyle = .default
-        self.navigationController?.navigationBar.tintColor = .red
+        viewModel.getPokemonList()
+        view.backgroundColor = .red
+        self.title = "Pokedex"
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
     }
     
     func initComponents() {
         addComponents()
         setAutolayout()
-        setDelegates()
     }
     
     func addComponents() {
@@ -59,44 +66,41 @@ class PokedexViewController: UIViewController {
             pokedexUIView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    func setDelegates() {
-        pokedexViewModel.delegate = self
-        pokedexUIView.delegate = self
-    }
 }
 
 extension PokedexViewController: PokedexUIViewDelegate {
-    func getPokemonType(text: String) {
-        pokedexViewModel.getpokemonType(type: text)
-    }
-    
-    func getpokemonDetail(pokemon: Pokemon) {
-        pokedexCoordinator?.openPokedexDetail(pokemon: pokemon)
-    }
-    
     func getPokemon(text: String) {
-        pokedexViewModel.getPokemonDetail(text)
+        viewModel.getPokemonDetail(text)
+    }
+    
+    func getPokemonType(text: String) {
+        
     }
 }
 
-extension PokedexViewController: PokedexViewModelDelegate {
-    func getPokemonDetail(pokemon: Pokemon) {
-        pokedexUIView.pokemon = pokemon
+extension PokedexViewController: PokedexView {
+    func setPokemonListType(pokemonType: PokemonType) {
+        
+    }
+    
+    func goToPokemonDetail(pokemon: Pokemon) {
+        pokedexCoordinator?.openPokedexDetail(pokemon: pokemon)
+    }
+    
+    
+    func setPokemon(pokemon: Pokemon) {
         DispatchQueue.main.async {
-            self.pokedexUIView.tableView.reloadData()
+            if !self.pokedexUIView.searchMode {
+                self.goToPokemonDetail(pokemon: pokemon)
+            } else {
+                self.pokedexUIView.pokemon = pokemon
+                self.pokedexUIView.tableView.reloadData()
+            }
         }
     }
     
-    func getPokemonList(pokemonList: PokemonList) {
+    func setPokemonList(pokemonList: [Results]) {
         pokedexUIView.pokemonList = pokemonList
-        DispatchQueue.main.async {
-            self.pokedexUIView.tableView.reloadData()
-        }
-    }
-    
-    func getPokemonType(pokemon: PokemonType) {
-        pokedexUIView.pokemonType = pokemon
         DispatchQueue.main.async {
             self.pokedexUIView.tableView.reloadData()
         }

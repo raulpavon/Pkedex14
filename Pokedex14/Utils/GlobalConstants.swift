@@ -9,7 +9,6 @@ import Foundation
 
 enum GlobalConstants {
     enum Pokedex {
-        static let pokedexURL = "https://pokeapi.co/api/v2/"
         
         static let httpMethod = "GET"
         

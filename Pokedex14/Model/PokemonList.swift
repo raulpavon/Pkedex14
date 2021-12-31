@@ -7,10 +7,18 @@
 
 import Foundation
 
-struct PokemonList: Decodable {
+struct PokemonList: Codable {
     let results: [Results]
+    
+    init() {
+        self.results = [Results]()
+    }
 }
 
-struct Results: Decodable {
+struct Results: Codable {
     let name: String
+    
+    init() {
+        self.name = ""
+    }
 }

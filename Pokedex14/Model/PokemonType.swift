@@ -7,9 +7,12 @@
 
 import Foundation
 
-struct PokemonType: Decodable {
-    var pokemonName = Pokemon()
+struct PokemonType: Codable {
+    var pokemon: [Pokemon]
     
+    init() {
+        self.pokemon = []
+    }
 }
 
 
